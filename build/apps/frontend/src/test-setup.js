@@ -1,0 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const zoneless_1 = require("jest-preset-angular/setup-env/zoneless");
+(0, zoneless_1.setupZonelessTestEnv)({
+    errorOnUnknownElements: true,
+    errorOnUnknownProperties: true,
+});
+//# sourceMappingURL=test-setup.js.map

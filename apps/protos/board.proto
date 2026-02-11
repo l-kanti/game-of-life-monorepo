@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package board;
+
+service BoardRequestService {
+  rpc GetBoards(GetBoardsRequest) returns (GetBoardsResponse);
+  rpc GetBoardsReplay(GetBoardsReplayRequest) returns (GetBoardsReplayResponse);
+  rpc CreateBoard(CreateBoardRequest) returns (CreateBoardResponse);
+}
+
+message GetBoardsRequest {
+  int32 game_id = 1;
+  int32 num_ticks = 2;
+  int32 last_tick = 3;
+}
+
+message GetBoardsResponse {
+  int32 game_id = 1;
+  int32 last_tick = 2;
+  repeated BoardGrid boards = 3;
+}
+
+message GetBoardsReplayRequest {
+  int32 game_id = 1;
+}
+
+message GetBoardsReplayResponse {
+  repeated BoardGrid boards = 1;
+}
+
+message CreateBoardRequest {
+  BoardGrid board = 1;
+}
+
+message CreateBoardResponse {
+  int32 game_id = 1;
+  int32 last_tick = 2;
+  repeated BoardGrid boards = 3;
+}
+
+message BoardGrid {
+  repeated BoardRow rows = 1;
+}
+
+message BoardRow {
+  repeated bool cells = 1;
+}

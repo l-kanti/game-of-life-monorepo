@@ -1,0 +1,112 @@
+import { Injectable, HttpException, HttpStatus, Inject, OnModuleInit, Logger } from '@nestjs/common';
+import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import { BoardsResponseDto, ReplayResponseDto } from '../dto/board.dto';
+import {
+  BoardRequestServiceClient,
+  GetBoardsRequest,
+  GetBoardsResponse,
+  GetBoardsReplayRequest,
+  GetBoardsReplayResponse,
+  CreateBoardRequest,
+  CreateBoardResponse,
+  BoardGrid,
+} from '../../../generated/board'; 
+
+@Injectable()
+export class BoardRequestService implements OnModuleInit {
+  private readonly logger = new Logger(BoardRequestService.name);
+  private boardComputeService: BoardRequestServiceClient; 
+
+  constructor(
+    @Inject('BOARD_PACKAGE') private client: ClientGrpc, 
+  ) {}
+
+  onModuleInit() {
+    this.boardComputeService = this.client.getService<BoardRequestServiceClient>(
+      'BoardRequestService',
+    );
+  }
+
+  async createBoard(board: boolean[][]): Promise<BoardsResponseDto> {
+    try {
+      const boardGrid = this.convertToProtoGrid(board);
+      const request: CreateBoardRequest = { board: boardGrid };
+      const response: CreateBoardResponse = await firstValueFrom(
+        this.boardComputeService.createBoard(request),
+      );
+
+      return {
+        gameId: response.gameId,
+        lastTick: response.lastTick,
+        boards: this.convertProtoGridsToArrays(response.boards),
+      };
+    } catch (error) {
+      this.logger.log(error);
+      throw new HttpException(
+        'Failed to create board',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getBoards(
+    gameId: number,
+    ticks: number,
+    lastTick: number,
+  ): Promise<BoardsResponseDto> {
+    try {
+      const request: GetBoardsRequest = {
+        gameId: gameId,
+        numTicks: ticks,
+        lastTick: lastTick,
+      };
+      
+      const response: GetBoardsResponse = await firstValueFrom(
+        this.boardComputeService.getBoards(request),
+      );
+
+      return {
+        gameId: response.gameId,
+        lastTick: response.lastTick,
+        boards: this.convertProtoGridsToArrays(response.boards),
+      };
+    } catch (error) {
+      this.logger.log(error);
+      throw new HttpException(
+        'Failed to get boards',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getReplay(gameId: number): Promise<ReplayResponseDto> {
+    try {
+      const request: GetBoardsReplayRequest = { gameId: gameId };
+      
+      const response: GetBoardsReplayResponse = await firstValueFrom(
+        this.boardComputeService.getBoardsReplay(request),
+      );
+
+      return {
+        replay: this.convertProtoGridsToArrays(response.boards),
+      };
+    } catch (error) {
+      this.logger.log(error);
+      throw new HttpException(
+        'Failed to get replay',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  private convertToProtoGrid(board: boolean[][]): BoardGrid {
+    return {
+      rows: board.map((row) => ({ cells: row })),
+    };
+  }
+
+  private convertProtoGridsToArrays(grids: BoardGrid[]): boolean[][][] {
+    return grids.map((grid) => grid.rows.map((row) => row.cells));
+  }
+}
