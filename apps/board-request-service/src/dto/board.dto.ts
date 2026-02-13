@@ -1,9 +1,8 @@
 import { IsNumber, IsArray, IsNotEmpty, Min, Max } from 'class-validator';
 
 export class GetBoardsDto {
-  @IsNumber()
   @IsNotEmpty()
-  gameId: number;
+  gameId: string;
 
   @IsNumber()
   @Min(1)
@@ -22,13 +21,12 @@ export class CreateBoardDto {
 }
 
 export class GetReplayDto {
-  @IsNumber()
   @IsNotEmpty()
-  gameId: number;
+  gameId: string;
 }
 
 export class BoardsResponseDto {
-  gameId: number;
+  gameId: string;
   lastTick: number;
   boards: boolean[][][];
 }

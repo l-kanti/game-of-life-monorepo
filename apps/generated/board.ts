@@ -12,19 +12,19 @@ import { Observable } from "rxjs";
 export const protobufPackage = "board";
 
 export interface GetBoardsRequest {
-  gameId: number;
+  gameId: string;
   numTicks: number;
   lastTick: number;
 }
 
 export interface GetBoardsResponse {
-  gameId: number;
+  gameId: string;
   lastTick: number;
   boards: BoardGrid[];
 }
 
 export interface GetBoardsReplayRequest {
-  gameId: number;
+  gameId: string;
 }
 
 export interface GetBoardsReplayResponse {
@@ -36,7 +36,7 @@ export interface CreateBoardRequest {
 }
 
 export interface CreateBoardResponse {
-  gameId: number;
+  gameId: string;
   lastTick: number;
   boards: BoardGrid[];
 }

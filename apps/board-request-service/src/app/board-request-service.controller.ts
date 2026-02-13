@@ -6,7 +6,8 @@ import {
   Query,
   HttpStatus,
   HttpException,
-  Logger
+  Logger,
+  BadRequestException
 } from '@nestjs/common';
 import { BoardRequestService } from './board-request-service.service';
 import {
@@ -26,6 +27,9 @@ export class BoardRequestController {
   async createBoard(
     @Body() createBoardDto: CreateBoardDto,
   ): Promise<BoardsResponseDto> {
+    if (createBoardDto.board == undefined) {
+      throw new BadRequestException;
+    }
     try {
       return await this.boardRequestService.createBoard(createBoardDto.board);
     } catch (error) {
@@ -42,7 +46,11 @@ export class BoardRequestController {
   }
 
   @Get('board')
-  async getBoards(@Query() getBoardsDto: GetBoardsDto): Promise<BoardsResponseDto> {
+  async getBoards(
+    @Body() getBoardsDto: GetBoardsDto): Promise<BoardsResponseDto> {
+    if (getBoardsDto.gameId == undefined || getBoardsDto.last_tick == undefined || getBoardsDto.ticks == undefined) {
+      throw new BadRequestException;
+    }
     try {
       return await this.boardRequestService.getBoards(
         getBoardsDto.gameId,
@@ -63,7 +71,10 @@ export class BoardRequestController {
   }
 
   @Get('replays/board')
-  async getReplay(@Query() getReplayDto: GetReplayDto): Promise<ReplayResponseDto> {
+  async getReplay(@Body() getReplayDto: GetReplayDto): Promise<ReplayResponseDto> {
+    if (getReplayDto.gameId == undefined) {
+      throw new BadRequestException;
+    }
     try {
       return await this.boardRequestService.getReplay(getReplayDto.gameId);
     } catch (error) {

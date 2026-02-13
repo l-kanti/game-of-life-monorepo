@@ -45,6 +45,13 @@ services:
       - "8081:8081"
     networks:
       - back-tier
+    environment:
+      JWT_SECRET: weneedtoreturntodinoisland
+      POSTGRES_DB: gameoflife 
+      POSTGRES_USER: dino
+      POSTGRES_PASSWORD: pollerbear
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
   board-request-service:
     build:
       context: .

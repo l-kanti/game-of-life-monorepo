@@ -31,10 +31,14 @@ export class BoardRequestService implements OnModuleInit {
   async createBoard(board: boolean[][]): Promise<BoardsResponseDto> {
     try {
       const boardGrid = this.convertToProtoGrid(board);
+
       const request: CreateBoardRequest = { board: boardGrid };
+
       const response: CreateBoardResponse = await firstValueFrom(
         this.boardComputeService.createBoard(request),
       );
+
+      console.log(`Response gameId: ${response.gameId}`);
 
       return {
         gameId: response.gameId,
@@ -51,7 +55,7 @@ export class BoardRequestService implements OnModuleInit {
   }
 
   async getBoards(
-    gameId: number,
+    gameId: string,
     ticks: number,
     lastTick: number,
   ): Promise<BoardsResponseDto> {
@@ -61,10 +65,13 @@ export class BoardRequestService implements OnModuleInit {
         numTicks: ticks,
         lastTick: lastTick,
       };
-      
+      console.log(`Request for getBoards-- game id: ${request.gameId} \n numTicks: ${request.numTicks} \n lastTick: ${lastTick}`);
+
       const response: GetBoardsResponse = await firstValueFrom(
         this.boardComputeService.getBoards(request),
       );
+
+      console.log(`Response from getBoards computeService: ${response.boards}`);
 
       return {
         gameId: response.gameId,
@@ -80,7 +87,7 @@ export class BoardRequestService implements OnModuleInit {
     }
   }
 
-  async getReplay(gameId: number): Promise<ReplayResponseDto> {
+  async getReplay(gameId: string): Promise<ReplayResponseDto> {
     try {
       const request: GetBoardsReplayRequest = { gameId: gameId };
       

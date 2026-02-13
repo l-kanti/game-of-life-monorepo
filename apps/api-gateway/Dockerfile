@@ -8,7 +8,7 @@ FROM docker.io/node:lts-alpine AS build
 
 WORKDIR /app
 COPY . .
-RUN npm install --legacy-peer-deps
+RUN npm install
 RUN npx nx build api-gateway
 
 # ============================================
@@ -16,6 +16,11 @@ RUN npx nx build api-gateway
 # ============================================
 FROM docker.io/node:lts-alpine AS final
 WORKDIR /app
+
+COPY --from=build /app/package*.json ./
+
+RUN npm install
+
 COPY --from=build ./app/dist/api-gateway .
-RUN npm install --legacy-peer-deps
+
 CMD [ "node", "main.js" ]

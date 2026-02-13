@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Board } from '../entities/board.entity';
+import { Board } from '../../../shared/entities/board.entity';
 import { GameOfLifeService } from './game-of-life.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,7 +18,7 @@ export class BoardComputeService {
   ) {}
 
   async createBoard(initialGrid: boolean[][]): Promise<{
-    game_id: number;
+    game_id: string;
     last_tick: number;
     boards: BoardGrid[];
   }> {
@@ -37,18 +37,18 @@ export class BoardComputeService {
     }
 
     return {
-      game_id: parseInt(gameId.replace(/-/g, '').substring(0, 8), 16), // Convert UUID to int for response
+      game_id: gameId, 
       last_tick: numTicks,
       boards: ticks.map((grid) => this.convertToProtoGrid(grid)),
     };
   }
 
   async getBoards(
-    gameId: number,
+    gameId: string,
     numTicks: number,
     lastTick: number,
   ): Promise<{
-    game_id: number;
+    game_id: string;
     last_tick: number;
     boards: BoardGrid[];
   }> {
@@ -70,7 +70,7 @@ export class BoardComputeService {
 
     // Save all generated ticks
     for (let i = 0; i < ticks.length; i++) {
-      await this.saveBoardState(gameId.toString(), lastTick + i + 1, ticks[i]);
+      await this.saveBoardState(gameId, lastTick + i + 1, ticks[i]);
     }
 
     return {
@@ -80,7 +80,7 @@ export class BoardComputeService {
     };
   }
 
-  async getBoardsReplay(gameId: number): Promise<{
+  async getBoardsReplay(gameId: string): Promise<{
     boards: BoardGrid[];
   }> {
     // Fetch all boards for this game from database

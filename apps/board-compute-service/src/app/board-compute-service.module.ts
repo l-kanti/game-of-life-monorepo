@@ -3,7 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BoardComputeController } from './board-compute-service.controller';
 import { BoardComputeService } from './board-compute-service.service';
 import { GameOfLifeService } from './game-of-life.service';
-import { Board } from '../entities/board.entity';
+import { Board } from '../../../shared/entities/board.entity';
+import { User } from '../../../shared/entities/user.entity';
 
 @Module({
   imports: [
@@ -14,10 +15,10 @@ import { Board } from '../entities/board.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      entities: [Board],
+      entities: [Board, User],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Board])],
+    TypeOrmModule.forFeature([Board, User])],
   controllers: [BoardComputeController],
   providers: [BoardComputeService, GameOfLifeService],
 })

@@ -5,7 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  JoinColumn,
+  ManyToOne
 } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity('boards')
 @Index(['gameId', 'tick'])
@@ -21,6 +24,13 @@ export class Board {
 
   @Column({ type: 'jsonb' })
   grid: boolean[][];
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @Column({ name: 'user_id', type: 'integer'})
+  userId: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
