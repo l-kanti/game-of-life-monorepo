@@ -11,10 +11,10 @@ export class GetBoardsDto {
 
   @IsNumber()
   @Min(1)
-  last_tick: number;
+  lastTick: number;
 
   @IsNumber()
-  user_id: number;
+  userId: number;
 }
 
 export class CreateBoardDto {
@@ -23,7 +23,7 @@ export class CreateBoardDto {
   board: boolean[][];
 
   @IsNumber()
-  user_id: number;
+  userId: number;
 }
 
 export class GetReplayDto {
@@ -31,7 +31,7 @@ export class GetReplayDto {
   gameId: string;
 
   @IsNumber()
-  user_id: number;
+  userId: number;
 }
 
 export class BoardsResponseDto {

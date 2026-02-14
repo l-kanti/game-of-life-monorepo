@@ -43,9 +43,10 @@ export class GatewayController {
     try {
       // fetch user_id from req containing JWT
     const user_id = req.decodedData.sub;
-    requestBody.user_id = user_id;
+    requestBody.userId = user_id;
+    console.log("USER ID: " + user_id);
     const response = await firstValueFrom(
-      this.httpService.post('http://localhost:50051/api/boards', requestBody)
+      this.httpService.post('http://board-request-service:50051/api/boards', requestBody)
     );
     return response.data;
     } catch (error) {
@@ -64,9 +65,9 @@ export class GatewayController {
   async postData(@Request() req, @Body() requestBody: CreateBoardDto) {
     try {
       const user_id = req.decodedData.sub;
-      requestBody.user_id = user_id
+      requestBody.userId = user_id
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:50051/api/boards/retrieve', requestBody)
+        this.httpService.post('http://board-request-service:50051/api/boards/retrieve', requestBody)
       );
       return response.data;
     } catch (error) {
@@ -85,7 +86,7 @@ export class GatewayController {
   async getReplayData(@Request() req, @Body() requestBody: GetReplayDto) {
     try {
       const user_id = req.decodedData.sub;
-      requestBody.user_id = user_id
+      requestBody.userId = user_id
       const response = await firstValueFrom(
       this.httpService.post('http://localhost:50051/api/replays/boards', requestBody)
     );

@@ -29,7 +29,7 @@ export class BoardRequestController {
       throw new BadRequestException;
     }
     try {
-      return await this.boardRequestService.createBoard(createBoardDto.board, createBoardDto.user_id);
+      return await this.boardRequestService.createBoard(createBoardDto.board, createBoardDto.userId);
     } catch (error) {
       this.logger.error('Error creating this board', error.stack);
       
@@ -46,15 +46,15 @@ export class BoardRequestController {
   @Post('boards/retrieve')
   async getBoards(
     @Body() getBoardsDto: GetBoardsDto): Promise<BoardsResponseDto> {
-    if (!getBoardsDto.gameId || !getBoardsDto.last_tick || !getBoardsDto.ticks) {
+    if (!getBoardsDto.gameId || !getBoardsDto.lastTick || !getBoardsDto.ticks || !getBoardsDto.userId) {
       throw new BadRequestException;
     }
     try {
       return await this.boardRequestService.getBoards(
         getBoardsDto.gameId,
         getBoardsDto.ticks,
-        getBoardsDto.last_tick,
-        getBoardsDto.user_id
+        getBoardsDto.lastTick,
+        getBoardsDto.userId
       );
     } catch (error) {
       this.logger.error('Error getting board', error.stack);
@@ -75,7 +75,7 @@ export class BoardRequestController {
       throw new BadRequestException;
     }
     try {
-      return await this.boardRequestService.getReplay(getReplayDto.gameId, getReplayDto.user_id);
+      return await this.boardRequestService.getReplay(getReplayDto.gameId, getReplayDto.userId);
     } catch (error) {
       this.logger.error('Error getting replay', error.stack);
       
