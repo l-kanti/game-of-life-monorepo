@@ -1,9 +1,7 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Query,
   HttpStatus,
   HttpException,
   Logger,
@@ -16,27 +14,27 @@ import {
   GetReplayDto,
   BoardsResponseDto,
   ReplayResponseDto,
-} from '../dto/board.dto';
+} from '../../../shared/dto/board.dto';
 
 @Controller()
 export class BoardRequestController {
   private readonly logger = new Logger(BoardRequestController.name);
   constructor(private readonly boardRequestService: BoardRequestService) {}
 
-  @Post('board')
+  @Post('boards')
   async createBoard(
     @Body() createBoardDto: CreateBoardDto,
   ): Promise<BoardsResponseDto> {
-    if (createBoardDto.board == undefined) {
+    if (!createBoardDto.board) {
       throw new BadRequestException;
     }
     try {
-      return await this.boardRequestService.createBoard(createBoardDto.board);
+      return await this.boardRequestService.createBoard(createBoardDto.board, createBoardDto.user_id);
     } catch (error) {
       this.logger.error('Error creating this board', error.stack);
       
       if (error.status === HttpStatus.FORBIDDEN) {
-        this.logger.error('Error creating board', error.stack); // ← Built-in pretty printing
+        this.logger.error('Error creating board', error.stack); 
       }
       throw new HttpException(
         error.message || 'Internal server error',
@@ -45,10 +43,10 @@ export class BoardRequestController {
     }
   }
 
-  @Get('board')
+  @Post('boards/retrieve')
   async getBoards(
     @Body() getBoardsDto: GetBoardsDto): Promise<BoardsResponseDto> {
-    if (getBoardsDto.gameId == undefined || getBoardsDto.last_tick == undefined || getBoardsDto.ticks == undefined) {
+    if (!getBoardsDto.gameId || !getBoardsDto.last_tick || !getBoardsDto.ticks) {
       throw new BadRequestException;
     }
     try {
@@ -56,6 +54,7 @@ export class BoardRequestController {
         getBoardsDto.gameId,
         getBoardsDto.ticks,
         getBoardsDto.last_tick,
+        getBoardsDto.user_id
       );
     } catch (error) {
       this.logger.error('Error getting board', error.stack);
@@ -70,13 +69,13 @@ export class BoardRequestController {
     }
   }
 
-  @Get('replays/board')
+  @Post('replays/boards/retrieve')
   async getReplay(@Body() getReplayDto: GetReplayDto): Promise<ReplayResponseDto> {
-    if (getReplayDto.gameId == undefined) {
+    if (!getReplayDto.gameId) {
       throw new BadRequestException;
     }
     try {
-      return await this.boardRequestService.getReplay(getReplayDto.gameId);
+      return await this.boardRequestService.getReplay(getReplayDto.gameId, getReplayDto.user_id);
     } catch (error) {
       this.logger.error('Error getting replay', error.stack);
       

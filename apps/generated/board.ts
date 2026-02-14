@@ -15,6 +15,7 @@ export interface GetBoardsRequest {
   gameId: string;
   numTicks: number;
   lastTick: number;
+  userId: number;
 }
 
 export interface GetBoardsResponse {
@@ -25,6 +26,7 @@ export interface GetBoardsResponse {
 
 export interface GetBoardsReplayRequest {
   gameId: string;
+  userId: number;
 }
 
 export interface GetBoardsReplayResponse {
@@ -32,7 +34,8 @@ export interface GetBoardsReplayResponse {
 }
 
 export interface CreateBoardRequest {
-  board: BoardGrid | undefined;
+  board: BoardGrid;
+  userId: number;
 }
 
 export interface CreateBoardResponse {

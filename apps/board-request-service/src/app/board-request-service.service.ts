@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus, Inject, OnModuleInit, Logger } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { BoardsResponseDto, ReplayResponseDto } from '../dto/board.dto';
+import { BoardsResponseDto, ReplayResponseDto } from '../../../shared/dto/board.dto';
 import {
   BoardRequestServiceClient,
   GetBoardsRequest,
@@ -28,11 +28,11 @@ export class BoardRequestService implements OnModuleInit {
     );
   }
 
-  async createBoard(board: boolean[][]): Promise<BoardsResponseDto> {
+  async createBoard(board: boolean[][], userId: number): Promise<BoardsResponseDto> {
     try {
       const boardGrid = this.convertToProtoGrid(board);
 
-      const request: CreateBoardRequest = { board: boardGrid };
+      const request: CreateBoardRequest = { board: boardGrid, userId: userId };
 
       const response: CreateBoardResponse = await firstValueFrom(
         this.boardComputeService.createBoard(request),
@@ -58,13 +58,16 @@ export class BoardRequestService implements OnModuleInit {
     gameId: string,
     ticks: number,
     lastTick: number,
+    userId: number
   ): Promise<BoardsResponseDto> {
     try {
       const request: GetBoardsRequest = {
         gameId: gameId,
         numTicks: ticks,
         lastTick: lastTick,
+        userId: userId
       };
+      //debugging
       console.log(`Request for getBoards-- game id: ${request.gameId} \n numTicks: ${request.numTicks} \n lastTick: ${lastTick}`);
 
       const response: GetBoardsResponse = await firstValueFrom(
@@ -87,9 +90,9 @@ export class BoardRequestService implements OnModuleInit {
     }
   }
 
-  async getReplay(gameId: string): Promise<ReplayResponseDto> {
+  async getReplay(gameId: string, userId: number): Promise<ReplayResponseDto> {
     try {
-      const request: GetBoardsReplayRequest = { gameId: gameId };
+      const request: GetBoardsReplayRequest = { gameId: gameId, userId: userId };
       
       const response: GetBoardsReplayResponse = await firstValueFrom(
         this.boardComputeService.getBoardsReplay(request),

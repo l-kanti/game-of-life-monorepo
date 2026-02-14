@@ -46,7 +46,7 @@ services:
     networks:
       - back-tier
     environment:
-      JWT_SECRET: weneedtoreturntodinoisland
+      JWT_SECRET_KEY: weneedtoreturntodinoisland
       POSTGRES_DB: gameoflife 
       POSTGRES_USER: dino
       POSTGRES_PASSWORD: pollerbear

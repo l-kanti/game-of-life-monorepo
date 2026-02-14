@@ -20,6 +20,7 @@ async getBoards(data: GetBoardsRequest): Promise<GetBoardsResponse> {
     data.gameId,
     data.numTicks,
     data.lastTick,
+    data.userId
   );
 
   // Map snake_case to camelCase to match protobuf
@@ -34,13 +35,13 @@ async getBoards(data: GetBoardsRequest): Promise<GetBoardsResponse> {
   async getBoardsReplay(
     data: GetBoardsReplayRequest,
   ): Promise<GetBoardsReplayResponse> {
-    return await this.boardComputeService.getBoardsReplay(data.gameId);
+    return await this.boardComputeService.getBoardsReplay(data.gameId, data.userId);
   }
 
   @GrpcMethod('BoardRequestService', 'CreateBoard')
   async createBoard(data: CreateBoardRequest): Promise<CreateBoardResponse> {
     const board = data.board.rows.map((row) => row.cells);
-    const result = await this.boardComputeService.createBoard(board);
+    const result = await this.boardComputeService.createBoard(board, data.userId);
 
     return {
       gameId: result.game_id,

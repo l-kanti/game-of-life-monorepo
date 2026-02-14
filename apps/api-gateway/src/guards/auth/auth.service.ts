@@ -14,6 +14,8 @@ export class AuthService {
     ) {}
 
     validateToken(token: string) {
+        console.log("TOKEN: " + token);
+        console.log("KEY: " + process.env.JWT_SECRET_KEY);
         return this.jwtServ.verify(token, {
             secret : process.env.JWT_SECRET_KEY
         });
@@ -25,8 +27,7 @@ export class AuthService {
             username: username
         }
         return this.jwtServ.sign(payload, {
-            secret : process.env.JWT_SECRET_KEY,
-            expiresIn: '24h'
+            secret : process.env.JWT_SECRET_KEY
         })
     }
 

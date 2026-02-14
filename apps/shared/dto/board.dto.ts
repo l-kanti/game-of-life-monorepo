@@ -12,17 +12,26 @@ export class GetBoardsDto {
   @IsNumber()
   @Min(1)
   last_tick: number;
+
+  @IsNumber()
+  user_id: number;
 }
 
 export class CreateBoardDto {
   @IsArray()
   @IsNotEmpty()
   board: boolean[][];
+
+  @IsNumber()
+  user_id: number;
 }
 
 export class GetReplayDto {
   @IsNotEmpty()
   gameId: string;
+
+  @IsNumber()
+  user_id: number;
 }
 
 export class BoardsResponseDto {

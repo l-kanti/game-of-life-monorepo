@@ -10,8 +10,8 @@ import { User } from 'apps/shared/entities/user.entity';
   imports: [
     HttpModule, 
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+      secret: process.env.JWT_SECRET_KEY,
+      signOptions: { expiresIn: '24h' },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',

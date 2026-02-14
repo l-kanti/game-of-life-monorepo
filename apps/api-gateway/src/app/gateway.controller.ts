@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, UseGuards, HttpException, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Request, HttpException, BadRequestException } from '@nestjs/common';
 import { AuthGuard } from '../guards/auth/auth.guard';
 import { HttpService } from '@nestjs/axios';
 import { AuthService } from '../guards/auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { LoginDto } from '../../../shared/dto/logindto';
+import { CreateBoardDto, GetBoardsDto, GetReplayDto } from '../../../shared/dto/board.dto';
 
 @Controller()
 export class GatewayController {
@@ -12,35 +13,39 @@ export class GatewayController {
 
   @Post("login")
   async login(@Body() loginDto: LoginDto) {
-    if (loginDto.username == undefined || !loginDto.password == undefined ) {
-      throw new BadRequestException;
+    if (!loginDto.username || !loginDto.password) {
+      throw new HttpException('Missing one or more required values', 400);    
     }
-    
+
     const user = await this.authService.validateUser(loginDto);
     
-    const token = this.authService.sign(user.username, user.id);
+    const token = this.authService.sign(user.username, user.id); 
     
     return { access_token: token };  
   }
 
   @Post("register")
   async createUser(@Body() loginDto: LoginDto) {
-    if (loginDto.username == undefined || !loginDto.password == undefined ) {
-      throw new BadRequestException;
+    if (!loginDto.username || !loginDto.password) {
+      throw new HttpException('Missing one or more required values', 400);    
     }
     try {
       this.authService.createUser(loginDto);
+      return { response: 'Account successfully created ^_^'}
     } catch (error) {
       throw error;
     }
   }
 
-  @Get("board")
+  @Post("boards")
   @UseGuards(AuthGuard)
-  async getData(@Body() requestBody: any) {
+  async getData(@Request() req, @Body() requestBody: GetBoardsDto) {
     try {
+      // fetch user_id from req containing JWT
+    const user_id = req.decodedData.sub;
+    requestBody.user_id = user_id;
     const response = await firstValueFrom(
-      this.httpService.get('http://localhost:50051/api/board', requestBody)
+      this.httpService.post('http://localhost:50051/api/boards', requestBody)
     );
     return response.data;
     } catch (error) {
@@ -54,12 +59,14 @@ export class GatewayController {
     }
   }
 
-  @Post("board")
+  @Post("boards/retrieve")
   @UseGuards(AuthGuard)
-  async postData(@Body() requestBody: any) {
+  async postData(@Request() req, @Body() requestBody: CreateBoardDto) {
     try {
+      const user_id = req.decodedData.sub;
+      requestBody.user_id = user_id
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:50051/api/board', requestBody)
+        this.httpService.post('http://localhost:50051/api/boards/retrieve', requestBody)
       );
       return response.data;
     } catch (error) {
@@ -73,12 +80,14 @@ export class GatewayController {
     }
   }
 
-  @Get("replays/board")
+  @Post("replays/boards/retrieve")
   @UseGuards(AuthGuard)
-  async getReplayData(@Body() requestBody: any) {
+  async getReplayData(@Request() req, @Body() requestBody: GetReplayDto) {
     try {
+      const user_id = req.decodedData.sub;
+      requestBody.user_id = user_id
       const response = await firstValueFrom(
-      this.httpService.get('http://localhost:50051/api/replays/board', requestBody)
+      this.httpService.post('http://localhost:50051/api/replays/boards', requestBody)
     );
     return response.data;
     } catch (error) {
